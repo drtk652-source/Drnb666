@@ -1,2 +1,0 @@
-# Drnb666
-PUBGMOBILE云更新
