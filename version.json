@@ -1,9 +1,5 @@
 {
-  "enable_update": true,
-  "force_update": false,
   "latest_version": "1.1",
-  "download_url": "https://www.123684.com/s/obOyVv-4gSod",
-  "update_title": "发现新版本",
-  "update_content": "快手搜索DR",
-  "min_version": "0.9.0"
+  "download_url": "https://www.123684.com/s/obOyVv-pgSod",
+  "msg": "优化了界面体验，修复已知问题"
 }
