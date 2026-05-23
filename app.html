@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Dr - PUBGMOBILE工具箱</title>
+<style>
+*{
+    margin:0;padding:0;box-sizing:border-box;
+    -webkit-user-select:none !important;
+    user-select:none !important;
+    -webkit-touch-callout:none !important;
+}
+#pwd, #pwd *{
+    -webkit-user-select:text !important;
+    user-select:text !important;
+}
+body{
+    min-height:100vh;
+    background:#0a0a12;
+    font-family:Consolas,Courier New,monospace;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#e0e0ff;
+    opacity:0;
+    visibility:hidden;
+    transition:all 1s ease
+}
+body.ready{opacity:1;visibility:visible}
+.free-tip{
+    position:fixed;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:16px;
+    color:#ffd000;
+    z-index:998;
+    pointer-events:none;
+}
+.free-tip.hide{opacity:0}
+.lock-wrapper{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%) scale(0.8);
+    z-index:999;
+    opacity:0;
+    transition:all .8s
+}
+.lock-wrapper.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.lock-wrapper.hide{opacity:0;transform:translate(-50%,-50%) translateY(-50px) scale(.9);pointer-events:none}
+.border-wrapper{
+    padding:2px;
+    border-radius:24px;
+    background:linear-gradient(90deg,#00f5ff,#ff00d4,#ffd000,#00f5ff);
+    background-size:300% 100%;
+    animation:borderGlow 4s infinite
+}
+@keyframes borderGlow{0%{background-position:0%}100%{background-position:300%}}
+.lock-container{
+    width:300px;
+    padding:3rem 2rem;
+    border-radius:22px;
+    background:rgba(15,15,30,.95);
+    text-align:center
+}
+.logo{
+    width:80px;
+    height:80px;
+    margin:0 auto 1.5rem;
+    border-radius:50%;
+    background:linear-gradient(135deg,#00f5ff,#ff00d4);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:2.5em;
+    font-weight:bold;
+    color:#0a0a12
+}
+.lock-container h2{font-size:1.8em;margin-bottom:2.5rem;color:#fff}
+#pwd{
+    width:100%;
+    padding:1.2rem 1rem;
+    margin-bottom:1.5rem;
+    border:1px solid #00f5ff;
+    border-radius:12px;
+    background:rgba(5,5,20,.6);
+    color:#fff;
+    outline:none
+}
+#btn{
+    width:100%;
+    padding:1.2rem;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(90deg,#00f5ff,#ff00d4);
+    color:#0a0a12;
+    font-weight:bold;
+    cursor:pointer;
+}
+#err{margin-top:1rem;color:#ff4466;display:none}
+#tools{
+    width:300px;
+    padding:2px;
+    border-radius:24px;
+    background:linear-gradient(90deg,#00f5ff,#ff00d4,#ffd000,#00f5ff);
+    background-size:300% 100%;
+    animation:borderGlow 4s infinite;
+    opacity:0;
+    pointer-events:none;
+    transition:all .8s .3s
+}
+#tools.show{opacity:1;pointer-events:all}
+.tool-inner{
+    padding:20px 1.5rem 1.5rem;
+    border-radius:22px;
+    background:rgba(15,15,30,.95);
+    position:relative
+}
+#clock{position:absolute;top:5px;left:10px;color:#00f5ff;font-size:.8em}
+.preset-buttons{display:grid;gap:10px}
+.preset-btn{
+    padding:1.2rem 0;
+    border:1px solid #ffb703;
+    border-radius:8px;
+    background:rgba(30,25,18,.8);
+    color:#ffd666;
+    cursor:pointer;
+    text-align:center
+}
+.preset-btn.disabled{opacity:.5;pointer-events:none}
+.qr-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#000c;
+    z-index:99999;
+    justify-content:center;
+    align-items:center
+}
+.qr-modal.show{display:flex}
+.qr-box{background:#fff;padding:16px;border-radius:14px;text-align:center}
+.qr-close{font-size:22px;cursor:pointer;margin-bottom:8px}
+.update-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.85);
+    z-index:999999;
+    align-items:center;
+    justify-content:center
+}
+.update-box{
+    background:#111;
+    width:280px;
+    padding:24px;
+    border-radius:16px;
+    border:1px solid #00f5ff;
+    text-align:center;
+    color:#fff
+}
+.update-box h3{margin-bottom:12px;color:#ffd000}
+.update-box p{margin-bottom:20px}
+.update-btn,.later-btn{
+    padding:10px;
+    border-radius:8px;
+    cursor:pointer;
+    width:100%
+}
+.update-btn{background:linear-gradient(90deg,#00f5ff,#ff00d4);border:none;color:#000;font-weight:bold}
+.later-btn{margin-top:10px;background:#333;border:1px solid #666;color:#fff}
+</style>
+</head>
+<body>
+<div class="free-tip" id="freeTip">7️⃣8️⃣9️⃣1️⃣</div>
+<div class="lock-wrapper" id="lockWrap">
+<div class="border-wrapper">
+<div class="lock-container">
+<div class="logo">Dr</div>
+<h2>PUBGMOBILE</h2>
+<input type="password" id="pwd" placeholder="密码：">
+<button id="btn">解锁</button>
+<p id="err">密码错误！</p>
+</div>
+</div>
+</div>
+<div id="tools">
+<div class="tool-inner">
+<div id="clock"></div>
+<h2>快手搜索DR</h2>
+<div class="preset-buttons">
+<button class="preset-btn" data-key="dogpro">DogProNew上色直装</button>
+<button class="preset-btn" data-key="pubgxmods">PUBGxMODS™上色直装</button>
+<button class="preset-btn" data-key="rlch">RLCH上色直装</button>
+<button class="preset-btn" data-key="shrem">SHREM上色直装</button>
+<button class="preset-btn" data-key="global">全球服原版</button>
+<button class="preset-btn" data-key="vietnam">越南服原版</button>
+<button class="preset-btn" data-key="japan_korea">日韩服原版</button>
+<button class="preset-btn" data-key="taiwan">台湾服原版</button>
+<button class="preset-btn" data-key="india">印度服原版</button>
+<button class="preset-btn" data-key="beauty">美化文件</button>
+<button class="preset-btn" data-key="data4">4服原始数据</button>
+<button class="preset-btn" data-key="valorant">无畏契约</button>
+<button class="preset-btn" data-key="tools">工具</button>
+<button class="preset-btn" onclick="openQrModal()">支持主播</button>
+<button class="preset-btn" onclick="openQrModal2()">快手搜索DR</button>
+<button class="preset-btn disabled">更新中</button>
+</div>
+</div>
+</div>
+<div class="qr-modal" id="qrModal"><div class="qr-box"><span class="qr-close" onclick="closeQrModal()">×关闭</span><img src="mm_facetoface_collect_qrcode_1759567880413.png" style="width:160px;border-radius:8px;"></div></div>
+<div class="qr-modal" id="qrModal2"><div class="qr-box"><span class="qr-close" onclick="closeQrModal2()">×关闭</span><img src="IMG_20260402_155124.jpg" style="width:160px;border-radius:8px;"></div></div>
+<div class="update-modal" id="updateModal"><div class="update-box"><h3>发现新版本</h3><p id="updateContent">请下载最新版本使用</p><button class="update-btn" onclick="goToUpdate()">立即更新</button><button class="later-btn" onclick="closeUpdateModal()">稍后再说</button></div></div>
+
+<script>
+// 配置
+const CURRENT_VERSION = "1.8";
+const GITHUB_USER = "drtk652-source";
+const REPO_NAME = "Drnb666";
+const CLOUD_CONFIG_URL = `https://cdn.jsdelivr.net/gh/${GITHUB_USER}/${REPO_NAME}@main/version.json`;
+const LINKS_CONFIG_URL = `https://cdn.jsdelivr.net/gh/${GITHUB_USER}/${REPO_NAME}@main/links.json`;
+const FORCE_UPDATE = true;
+
+let remoteLinks = {};
+let updateUrl = "";
+
+// 键盘Bug修复
+(function() {
+    function dismissKeyboard() {
+        const active = document.activeElement;
+        if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) active.blur();
+        const pwdField = document.getElementById('pwd');
+        if (pwdField) pwdField.blur();
+    }
+    document.addEventListener('touchstart', function(e) {
+        if (e.target.closest('.preset-btn')) dismissKeyboard();
+    }, { passive: false });
+})();
+
+// 禁止长按菜单
+document.onselectstart = e => e.preventDefault();
+document.oncontextmenu = e => e.preventDefault();
+
+// 加载远程链接
+async function loadRemoteLinks(){
+    try{
+        let res = await fetch(LINKS_CONFIG_URL + "?t=" + Date.now(),{cache:'no-store'});
+        if(res.ok) remoteLinks = await res.json();
+    }catch(e){ remoteLinks = {}; }
+    bindBtns();
+}
+
+function safeOpenUrl(url){
+    let newWin = window.open(url, '_blank');
+    setTimeout(()=>{
+        if(!newWin || newWin.closed){
+            navigator.clipboard.writeText(url).then(()=>alert("链接已复制")).catch(()=>alert(url));
+        }
+    },400);
+}
+
+function bindBtns(){
+    document.querySelectorAll('.preset-btn[data-key]').forEach(btn=>{
+        let k = btn.getAttribute('data-key');
+        btn.onclick = ()=>{
+            btn.blur();
+            document.getElementById('pwd').blur();
+            if(remoteLinks[k]) safeOpenUrl(remoteLinks[k]);
+        };
+    });
+}
+
+// 版本检测
+async function checkUpdate() {
+    try {
+        const res = await fetch(CLOUD_CONFIG_URL + "?t=" + Date.now(),{cache:'no-store'});
+        if (!res.ok) return;
+        const data = await res.json();
+        const serverVer = data.version || data.latest_version || "1.0";
+        if (compareVersions(serverVer, CURRENT_VERSION) > 0) {
+            updateUrl = data.download_url;
+            document.getElementById('updateContent').innerText = data.message || "请更新新版本";
+            document.getElementById('updateModal').style.display = "flex";
+            if (FORCE_UPDATE || data.force_update) {
+                document.getElementById('lockWrap').style.display = "none";
+                document.getElementById('tools').style.display = "none";
+            }
+        }
+    } catch(e) {}
+}
+
+function compareVersions(v1, v2) {
+    const a = v1.split('.').map(Number);
+    const b = v2.split('.').map(Number);
+    for (let i = 0; i < Math.max(a.length, b.length); i++) {
+        const n1 = a[i] || 0, n2 = b[i] || 0;
+        if (n1 > n2) return 1;
+        if (n1 < n2) return -1;
+    }
+    return 0;
+}
+
+function goToUpdate() { if (updateUrl) safeOpenUrl(updateUrl); }
+function closeUpdateModal(){ document.getElementById('updateModal').style.display = "none"; }
+
+// 解锁逻辑
+window.onload = function() {
+    document.body.classList.add('ready');
+    setTimeout(() => document.getElementById('lockWrap').classList.add('show'), 300);
+    setTimeout(() => document.getElementById('freeTip').classList.add('hide'), 3000);
+    if (localStorage.getItem("lockPassOK") === "true") {
+        document.getElementById('lockWrap').classList.add('hide');
+        document.getElementById('tools').classList.add('show');
+        runClock();
+    }
+    loadRemoteLinks();
+    checkUpdate();
+};
+
+const rightPwd = "Dr";
+function unlock() {
+    const pwd = document.getElementById('pwd');
+    if (pwd.value.trim() === rightPwd) {
+        localStorage.setItem("lockPassOK", "true");
+        document.getElementById('lockWrap').classList.add('hide');
+        document.getElementById('tools').classList.add('show');
+        runClock();
+        pwd.blur();
+    } else {
+        document.getElementById('err').style.display = 'block';
+        setTimeout(() => document.getElementById('err').style.display = 'none', 2000);
+    }
+}
+document.getElementById('btn').onclick = unlock;
+document.getElementById('pwd').onkeydown = e => e.key === "Enter" && unlock();
+
+function runClock() {
+    setInterval(() => {
+        const d = new Date();
+        document.getElementById('clock').innerText = `${d.getFullYear()%100}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+    }, 1000);
+}
+
+// 二维码弹窗
+function openQrModal(){ document.getElementById('qrModal').classList.add('show'); }
+function closeQrModal(){ document.getElementById('qrModal').classList.remove('show'); }
+function openQrModal2(){ document.getElementById('qrModal2').classList.add('show'); }
+function closeQrModal2(){ document.getElementById('qrModal2').classList.remove('show'); }
+document.getElementById('qrModal').onclick = e => e.target === document.getElementById('qrModal') && closeQrModal();
+document.getElementById('qrModal2').onclick = e => e.target === document.getElementById('qrModal2') && closeQrModal2();
+</script>
+</body>
+</html>
