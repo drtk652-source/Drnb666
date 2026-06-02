@@ -1,7 +1,538 @@
-{
-  "icon": "",
-  "text": "欢迎使用DR",
-  "textColor": "#ffd000",
-  "textSize": "1.2em",
-  "duration": 3000
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Dr - </title>
+<style>
+*{
+    margin:0;padding:0;box-sizing:border-box;
+    /* 强制全局彻底禁止长按选中 */
+    -webkit-user-select:none !important;
+    -khtml-user-select:none !important;
+    -moz-user-select:none !important;
+    -ms-user-select:none !important;
+    user-select:none !important;
+    -webkit-touch-callout:none !important;
+    touch-callout:none !important;
 }
+/* 仅密码输入框保留正常输入、选中 */
+#pwd, #pwd *{
+    -webkit-user-select:text !important;
+    user-select:text !important;
+}
+body{
+    min-height:100vh;
+    background:#0a0a12;
+    background-image:url();
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+    font-family:Consolas,Courier New,monospace;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#e0e0ff;
+    opacity:0;
+    visibility:hidden;
+    transition:all 1s ease
+}
+body.ready{opacity:1;visibility:visible}
+.free-tip{
+    position:fixed;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    font-size:16px;
+    color:#ffd000;
+    text-shadow:0 0 8px rgba(25,30,60,.5);
+    font-weight:bold;
+    z-index:998;
+    pointer-events:none;
+    transition:opacity .6s ease
+}
+.free-tip.hide{opacity:0}
+.lock-wrapper{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%) scale(0.8);
+    z-index:999;
+    opacity:0;
+    transition:all .8s cubic-bezier(.25,.46,.45,.94)
+}
+.lock-wrapper.show{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(1)
+}
+.lock-wrapper.hide{
+    opacity:0;
+    transform:translate(-50%,-50%) translateY(-50px) scale(.9);
+    pointer-events:none
+}
+.border-wrapper{
+    padding:2px;
+    border-radius:24px;
+    background:linear-gradient(90deg,#00f5ff,#ff00d4,#ffd000,#00f5ff);
+    background-size:300% 100%;
+    animation:borderGlow 4s infinite
+}
+@keyframes borderGlow{
+    0%{background-position:0%}
+    100%{background-position:300%}
+}
+.lock-container{
+    width:300px;
+    padding:3rem 2rem;
+    border-radius:22px;
+    background:rgba(15,15,30,.95);
+    text-align:center
+}
+.logo{
+    width:80px;
+    height:80px;
+    margin:0 auto 1.5rem;
+    border-radius:50%;
+    background:linear-gradient(135deg,#00f5ff,#ff00d4);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:2.5em;
+    font-weight:bold;
+    color:#0a0a12
+}
+.lock-container h2{
+    font-size:1.8em;
+    letter-spacing:2px;
+    margin-bottom:2.5rem;
+    color:#fff
+}
+#pwd{
+    width:100%;
+    padding:1.2rem 1rem;
+    margin-bottom:1.5rem;
+    border:1px solid #00f5ff;
+    border-radius:12px;
+    background:rgba(5,5,20,.6);
+    color:#fff;
+    font-family:inherit;
+    outline:none;
+    pointer-events:auto;
+    touch-action:manipulation
+}
+#btn{
+    width:100%;
+    padding:1.2rem;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(90deg,#00f5ff,#ff00d4);
+    color:#0a0a12;
+    font-weight:bold;
+    cursor:pointer;
+    position:relative;
+    z-index:10;
+    touch-action:manipulation;
+    transition: transform 0.2s ease;
+}
+#btn:active{
+    transform: scale(0.96);
+}
+#err{
+    margin-top:1rem;
+    color:#ff4466;
+    font-size:.9em;
+    display:none
+}
+#tools{
+    width:300px;
+    padding:2px;
+    border-radius:24px;
+    background:linear-gradient(90deg,#00f5ff,#ff00d4,#ffd000,#00f5ff);
+    background-size:300% 100%;
+    animation:borderGlow 4s infinite;
+    opacity:0;
+    pointer-events:none;
+    transition:all .8s .3s;
+    position:relative;
+    z-index:9
+}
+#tools.show{opacity:1;pointer-events:all}
+.tool-inner{
+    padding:20px 1.5rem 1.5rem;
+    border-radius:22px;
+    background:rgba(15,15,30,.95);
+    position:relative
+}
+#clock{
+    position:absolute;
+    top:5px;
+    left:10px;
+    color:#00f5ff;
+    font-size:.8em
+}
+.preset-buttons{display:grid;gap:10px}
+.preset-btn{
+    padding:1.2rem 0;
+    border:1px solid #ffb703;
+    border-radius:8px;
+    background:rgba(30,25,18,.8);
+    color:#ffd666;
+    cursor:pointer;
+    font-size:.9em;
+    position:relative;
+    z-index:10;
+    touch-action:manipulation;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    tab-index: -1;
+    pointer-events:auto;
+    transition: transform 0.2s ease;
+}
+.preset-btn:active:not(.disabled){
+    transform: scale(0.96);
+}
+.preset-btn.disabled{
+    opacity:.5;
+    border-color:#666;
+    color:#999;
+    pointer-events:none
+}
+/* 工具区全局禁止获取焦点 */
+#tools * {
+    -webkit-user-focus: none;
+    user-focus: none;
+    outline: 0 !important;
+}
+.qr-modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#000c;
+    z-index:99999;
+    justify-content:center;
+    align-items:center
+}
+.qr-modal.show{display:flex}
+.qr-box{
+    background:#fff;
+    padding:16px;
+    border-radius:14px;
+    text-align:center
+}
+.qr-close{
+    font-size:22px;
+    cursor:pointer;
+    margin-bottom:8px
+}
+.update-modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  z-index:999999;
+  align-items:center;
+  justify-content:center;
+}
+.update-box{
+  background:#111;
+  width:280px;
+  padding:24px;
+  border-radius:16px;
+  border:1px solid #00f5ff;
+  text-align:center;
+  color:#fff;
+}
+.update-box h3{
+  margin-bottom:12px;
+  color:#ffd000;
+}
+.update-box p{
+  margin-bottom:20px;
+  font-size:14px;
+  line-height:1.4;
+}
+.update-btn{
+  padding:10px 20px;
+  background:linear-gradient(90deg,#00f5ff,#ff00d4);
+  border:none;
+  border-radius:8px;
+  color:#000;
+  font-weight:bold;
+  cursor:pointer;
+  width:100%;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease;
+}
+.update-btn:active{
+    transform: scale(0.96);
+}
+.later-btn{
+  margin-top:10px;
+  padding:8px 20px;
+  background:#333;
+  border:1px solid #666;
+  border-radius:8px;
+  color:#fff;
+  cursor:pointer;
+  width:100%;
+  font-size:12px;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.2s ease;
+}
+.later-btn:active{
+    transform: scale(0.96);
+}
+</style>
+</head>
+<body>
+
+<div class="free-tip" id="freeTip">7️⃣8️⃣9️⃣1️⃣</div>
+
+<div class="lock-wrapper" id="lockWrap">
+<div class="border-wrapper">
+<div class="lock-container">
+<div class="logo">Dr</div>
+<h2>PUBGMOBILE</h2>
+<input type="password" id="pwd" placeholder="密码：">
+<button id="btn">解锁</button>
+<p id="err">密码错误！</p>
+</div>
+</div>
+</div>
+
+<div id="tools">
+<div class="tool-inner">
+<div id="clock"></div>
+<h2>快手搜索DR</h2>
+<div class="preset-buttons">
+<button class="preset-btn" data-key="dogpro" tabindex="-1">DogProNew上色直装</button>
+<button class="preset-btn" data-key="pubgxmods" tabindex="-1">PUBGxMODS™上色直装</button>
+<button class="preset-btn" data-key="rlch" tabindex="-1">RLCH上色直装</button>
+<button class="preset-btn" data-key="shrem" tabindex="-1">SHREM上色直装</button>
+<button class="preset-btn" data-key="Drnb666" tabindex="-1">掩体变色内透直装</button>
+<button class="preset-btn" data-key="global" tabindex="-1">全球服原版</button>
+<button class="preset-btn" data-key="vietnam" tabindex="-1">越南服原版</button>
+<button class="preset-btn" data-key="japan_korea" tabindex="-1">日韩服原版</button>
+<button class="preset-btn" data-key="taiwan" tabindex="-1">台湾服原版</button>
+<button class="preset-btn" data-key="india" tabindex="-1">印度服原版</button>
+<button class="preset-btn" data-key="beauty" tabindex="-1">美化文件</button>
+<button class="preset-btn" data-key="data4" tabindex="-1">4服原始数据</button>
+<button class="preset-btn" data-key="valorant" tabindex="-1">无畏契约</button>
+<button class="preset-btn" data-key="7891" tabindex="-1">三角洲</button>
+<button class="preset-btn" data-key="13" tabindex="-1">和平精英</button>
+<button class="preset-btn" data-key="tools" tabindex="-1">工具</button>
+<button class="preset-btn" onclick="openQrModal()" tabindex="-1">支持主播</button>
+<button class="preset-btn" onclick="openQrModal2()" tabindex="-1">快手搜索DR</button>
+<button class="preset-btn disabled" tabindex="-1">更新中</button>
+</div>
+</div>
+</div>
+
+<div class="qr-modal" id="qrModal">
+<div class="qr-box">
+<span class="qr-close" onclick="closeQrModal()">×关闭</span>
+<img src="mm_reward_qrcode_1779710931894.png" style="width:160px;border-radius:8px;">
+</div>
+</div>
+
+<div class="qr-modal" id="qrModal2">
+<div class="qr-box">
+<span class="qr-close" onclick="closeQrModal2()">×关闭</span>
+<img src="41900864291779895619128.jpg" style="width:160px;border-radius:8px;">
+</div>
+</div>
+
+<div class="update-modal" id="updateModal">
+  <div class="update-box">
+    <h3>发现新版本</h3>
+    <p id="updateContent">请下载最新版本使用</p>
+    <button class="update-btn" onclick="goToUpdate()">立即更新</button>
+  </div>
+</div>
+
+<script>
+// 全局拦截长按、右键
+document.onselectstart = e => e.preventDefault();
+document.oncontextmenu = e => e.preventDefault();
+document.addEventListener('touchhold', e => e.preventDefault(), true);
+document.addEventListener('longpress', e => {if(e.cancelable) e.preventDefault()}, true);
+window.addEventListener('contextmenu', e => e.preventDefault(), true);
+
+// 点击空白处失焦
+document.addEventListener('touchstart', function(e){
+    if(!document.getElementById('pwd')?.contains(e.target)){
+        document.getElementById('pwd')?.blur();
+    }
+});
+
+// 配置项
+const CURRENT_VERSION = "1.9";
+const CLOUD_CONFIG_URL = "https://raw.githubusercontent.com/drtk652-source/Drnb666/main/version.json";
+const LINKS_CONFIG_URL = "https://raw.githubusercontent.com/drtk652-source/Drnb666/main/links.json";
+const FORCE_UPDATE = true;
+
+let remoteLinks = {};
+let updateUrl = "";
+
+// 加载远程链接
+async function loadRemoteLinks(){
+    try{
+        let res = await fetch(LINKS_CONFIG_URL + "?t=" + Date.now(),{cache:'no-store'});
+        if(res.ok){
+            remoteLinks = await res.json();
+        }
+    }catch(e){
+        remoteLinks = {};
+    }
+    bindBtns();
+}
+
+// 跳转链接，拦截兜底
+function safeOpenUrl(url){
+    let newWin = window.open(url, '_blank');
+    setTimeout(()=>{
+        if(!newWin || newWin.closed || typeof newWin.outerHeight == 'undefined'){
+            navigator.clipboard.writeText(url).then(()=>{
+                alert("跳转被拦截，链接已复制，请手动粘贴访问");
+            }).catch(()=>{
+                alert(`链接地址：${url}`);
+            });
+        }
+    },400);
+}
+
+// 绑定按钮 + 强制失焦
+function bindBtns(){
+    document.querySelectorAll('.preset-btn[data-key]').forEach(btn=>{
+        let k = btn.getAttribute('data-key');
+        btn.onclick = ()=>{
+            btn.blur();
+            if(document.activeElement) document.activeElement.blur();
+            document.body.focus();
+            if(remoteLinks[k]) safeOpenUrl(remoteLinks[k]);
+        };
+    });
+}
+
+// 版本检测
+async function checkUpdate() {
+  try {
+    const res = await fetch(CLOUD_CONFIG_URL + "?t=" + Date.now(),{cache:'no-store'});
+    if (!res.ok) return;
+    const data = await res.json();
+    const serverVer = data.version || data.latest_version || "1.0";
+    if (compareVersions(serverVer, CURRENT_VERSION) > 0) {
+      updateUrl = data.download_url;
+      updateContent.innerText = data.message || "请更新新版本";
+      updateModal.style.display = "flex";
+      if (FORCE_UPDATE || data.force_update) {
+        lockWrap.style.display = "none";
+        tools.style.display = "none";
+      }
+    }
+  } catch (e) {}
+}
+
+// 版本号对比
+function compareVersions(v1, v2) {
+  const a = v1.split('.').map(Number);
+  const b = v2.split('.').map(Number);
+  for (let i = 0; i < Math.max(a.length, b.length); i++) {
+    const n1 = a[i] || 0;
+    const n2 = b[i] || 0;
+    if (n1 > n2) return 1;
+    if (n1 < n2) return -1;
+  }
+  return 0;
+}
+
+function goToUpdate() {
+  if (updateUrl) safeOpenUrl(updateUrl);
+}
+
+function closeUpdateModal(){
+    updateModal.style.display = "none";
+}
+
+window.onload = function() {
+  document.body.classList.add('ready');
+  setTimeout(() => lockWrap.classList.add('show'), 300);
+  setTimeout(() => freeTip.classList.add('hide'), 3000);
+  
+  // 已记住密码：直接移除登录模块，彻底消除点击区域
+  if (localStorage.getItem("lockPassOK") === "true") {
+    lockWrap.remove();
+    tools.classList.add('show');
+    runClock();
+    if(document.activeElement) document.activeElement.blur();
+    document.body.focus();
+  }
+  loadRemoteLinks();
+  checkUpdate();
+};
+
+const lockWrap = document.getElementById('lockWrap');
+const pwd = document.getElementById('pwd');
+const btn = document.getElementById('btn');
+const err = document.getElementById('err');
+const tools = document.getElementById('tools');
+const clock = document.getElementById('clock');
+const rightPwd = "Dr";
+
+pwd.addEventListener('keydown', e => {
+    const allowKeys = ['Backspace','Delete','ArrowLeft','ArrowRight','Tab','Enter','Home','End'];
+    if(allowKeys.includes(e.key)){
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+    }
+});
+
+// 解锁逻辑：移除登录模块，不再占位
+function unlock() {
+  if (pwd.value.trim() === rightPwd) {
+    localStorage.setItem("lockPassOK", "true");
+    lockWrap.remove(); // 核心：彻底删除登录DOM
+    tools.classList.add('show');
+    runClock();
+    if(document.activeElement) document.activeElement.blur();
+    document.body.focus();
+  } else {
+    err.style.display = 'block';
+    setTimeout(() => err.style.display = 'none', 2000);
+  }
+}
+
+btn.onclick = unlock;
+pwd.onkeydown = e => e.key === "Enter" && unlock();
+
+// 时钟
+function runClock() {
+  setInterval(() => {
+    const d = new Date();
+    clock.innerText = `${d.getFullYear()%100}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+  }, 1000);
+}
+
+// 二维码弹窗
+const qrModal = document.getElementById('qrModal');
+function openQrModal(){
+    if(document.activeElement) document.activeElement.blur();
+    document.body.focus();
+    qrModal.classList.add('show');
+}
+function closeQrModal(){qrModal.classList.remove('show')}
+qrModal.onclick = e => e.target === qrModal && closeQrModal();
+
+const qrModal2 = document.getElementById('qrModal2');
+function openQrModal2(){
+    if(document.activeElement) document.activeElement.blur();
+    document.body.focus();
+    qrModal2.classList.add('show');
+}
+function closeQrModal2(){qrModal2.classList.remove('show')}
+qrModal2.onclick = e => e.target === qrModal2 && closeQrModal2();
+</script>
+</body>
+</html>
