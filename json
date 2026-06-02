@@ -1,0 +1,11 @@
+{
+  "text": "7️⃣8️⃣9️⃣1️⃣",
+  "duration": 3000,
+  "style": {
+    "fontSize": "20px",
+    "color": "#ffd000",
+    "textShadow": "0 0 8px rgba(25,30,60,.5)",
+    "fontWeight": "bold",
+    "animation": "fadeInScale 0.6s ease"
+  }
+}
