@@ -1,15 +1,13 @@
-[
-  { "key": "上色直装", "name": "上色直装V1", "url": "https://1816915715.share.123pan.cn/123pan/obOyVv-cyj1d" },
-  { "key": "Drnb666", "name": "内透直装V1", "url": "https://1816915715.share.123pan.cn/123pan/obOyVv-EMl1d" },
-  { "key": "global", "name": "全球服原版", "url": "https://1831105458.share.123pan.cn/123pan/ToQqjv-rl2m3" },
-  { "key": "vietnam", "name": "越南服原版", "url": "https://1831105458.share.123pan.cn/123pan/ToQqjv-Dl2m3" },
-  { "key": "japan_korea", "name": "日韩服原版", "url": "https://1831105458.share.123pan.cn/123pan/ToQqjv-0l2m3" },
-  { "key": "taiwan", "name": "台湾服原版", "url": "https://1831105458.share.123pan.cn/123pan/ToQqjv-wCrm3" },
-  { "key": "india", "name": "印度服原版", "url": "https://1831105458.share.123pan.cn/123pan/ToQqjv-pEpm3" },
-  { "key": "beauty", "name": "功能文件", "url": "https://www.123684.com/s/obOyVv-Y1Uod" },
-  { "key": "data4", "name": "4服原始数据", "url": "https://1816915715.share.123865.com/123pan/obOyVv-Ral1d" },
-  { "key": "unknown1", "name": "未知1", "url": "" },
-  { "key": "unknown2", "name": "未知2", "url": "" },
-  { "key": "unknown3", "name": "未知3", "url": "" },
-  { "key": "tools", "name": "工具", "url": "https://www.123684.com/s/obOyVv-MxUod" }
-]
+{
+  "DRBN": "https://1816915715.share.123pan.cn/123pan/obOyVv-cyj1d",
+"Drnb666": "https://1816915715.share.123pan.cn/123pan/obOyVv-EMl1d",
+  "global": "https://1831105458.share.123pan.cn/123pan/ToQqjv-rl2m3",
+  "vietnam": "https://1831105458.share.123pan.cn/123pan/ToQqjv-Dl2m3",
+  "japan_korea": "https://1831105458.share.123pan.cn/123pan/ToQqjv-0l2m3",
+  "taiwan": "https://1831105458.share.123pan.cn/123pan/ToQqjv-wCrm3",
+  "india": "https://1831105458.share.123pan.cn/123pan/ToQqjv-pEpm3",
+  "beauty": "https://www.123684.com/s/obOyVv-Y1Uod",
+  "data4": "https://1816915715.share.123865.com/123pan/obOyVv-Ral1d",
+  "7891": "",
+  "tools": "https://www.123684.com/s/obOyVv-MxUod"
+}
